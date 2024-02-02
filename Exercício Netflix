@@ -1,0 +1,187 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct No {
+  int id;
+  char nome[100];
+  int numero_temporada;
+  struct No *prox;
+} No;
+
+typedef struct Noassistidos {
+  char nome[100];
+  struct Noassistidos *prox;
+} Noassistidos;
+
+typedef struct {
+  No *inicial;
+} Serie;
+
+typedef struct {
+  No *inicial;
+} Desejo;
+
+typedef struct {
+  Noassistidos *inicial;
+} Assistidos;
+
+Serie *criacao() {
+  Serie *l = (Serie *)calloc(1, sizeof(Serie));
+  l->inicial = NULL;
+  return l;
+}
+
+Desejo *criacaoDesejo() {
+  Desejo *d = (Desejo *)calloc(1, sizeof(Desejo));
+  d->inicial = NULL;
+  return d;
+}
+
+Assistidos *criacaoAssistidos() {
+  Assistidos *a = (Assistidos *)calloc(1, sizeof(Assistidos));
+  a->inicial = NULL;
+  return a;
+}
+// Função para adicionar série na lista
+void inserirSerie(Serie *lista, int id, char nome[100], int num_temp) {
+  No *novoNo = (No *)calloc(1, sizeof(No));
+  novoNo->prox = lista->inicial;
+  novoNo->id = id;
+  strcpy(novoNo->nome, nome);
+  novoNo->numero_temporada = num_temp;
+  lista->inicial = novoNo;
+}
+
+void inserirSerieDesejo(Desejo *lista, int id, char nome[100], int num_temp) {
+  No *novoNo = (No *)calloc(1, sizeof(No));
+  novoNo->prox = lista->inicial;
+  novoNo->id = id;
+  strcpy(novoNo->nome, nome);
+  novoNo->numero_temporada = num_temp;
+  lista->inicial = novoNo;
+}
+
+void inserirSerieAssistido(Assistidos *lista, char nome[100]) {
+  Noassistidos *novoNo = (Noassistidos *)calloc(1, sizeof(Noassistidos));
+  novoNo->prox = lista->inicial;
+  strcpy(novoNo->nome, nome);
+  lista->inicial = novoNo;
+}
+
+// Função para apresentar
+void apresentar(Serie *lista) {
+  No *aux = lista->inicial;
+  while (aux != NULL) {
+    printf("%d -> ", aux->id);
+    printf("%s -> ", aux->nome);
+    printf("%d -> ", aux->numero_temporada);
+
+    aux = aux->prox;
+  }
+  printf("NULL\n");
+}
+
+// Função de remover serie  da lista
+
+int removerSerieDesejo(Desejo *lista) {
+  No *inicial = lista->inicial;
+  if (inicial == NULL) {
+    printf("Lista vazia");
+    return 0;
+  } else {
+    lista->inicial = inicial->prox;
+    free(inicial);
+    return 1;
+  }
+}
+
+// Função de chamar os créditos
+void creditos() {
+  printf("Giovana Castro - 1961078 e Giovana Oliveira - 1961112");
+}
+int main() {
+
+  Serie *s;
+  s = criacao();
+  Desejo *d;
+  d = criacaoDesejo();
+  Assistidos *a;
+  a = criacaoAssistidos();
+  int escolha_usuario;
+  int idSerie;
+  char nomeSerie[100];
+  int numTempSerie;
+  int indicador = 1;
+
+  // Função de mover
+  void Copiar(Desejo * lista, Assistidos * lista2, char nome[100]) {
+    if (lista2->Inicio == null) {
+      strcpy(d->nome, nome);
+    } else {
+      inserirSerieAssistido(a, nome);
+    }
+  }
+
+  while (indicador != 0) {
+    for (int i = 0; i < 3; i++) {
+      int id;
+      char nome[100];
+      int numTemp;
+
+      printf("Insira o nome da série: ");
+      scanf("%s", nome, sizeof(nome));
+      getchar();
+      printf("Insira a quantidade de temporadas da série: ");
+      scanf("%d", &numTemp);
+
+      inserirSerie(s, i, nome, numTemp);
+    }
+
+    printf("BEM VINDO AO SISTEMA DE GERENCIAMENTO DA NETFLIX");
+
+    apresentar(s);
+
+    printf("O QUE VOCÊ DESEJA FAZER?");
+    printf(
+        "[1] - ADICIONAR SÉRIE AO FAVORITOS\n[2] - ADICIONAR SÉRIE A LISTA DE "
+        "ASSISTIDOS\n[3] - REMOVER SÉRIE DA LISTA DE FAVORITOS\n[4] - CHAMAR  "
+        "OS CRÉDITOS\n[5]- MOVER PARA LISTA DE ASSISTIDOS\n [0] - SAIR DO "
+        "SISTEMA");
+    scanf("%d", &escolha_usuario);
+
+    if (escolha_usuario == 1) {
+
+      printf("Informe o id da série: ");
+      scanf("%d", &idSerie);
+      printf("Informe o nome da série: ");
+      scanf("%s", nomeSerie, sizeof(nomeSerie));
+      getchar();
+      printf("Informe a quantidade de temporadas da série: ");
+      scanf("%d", &numTempSerie);
+      inserirSerieDesejo(d, idSerie, nomeSerie, numTempSerie);
+
+    } else if (escolha_usuario == 2) {
+
+      printf("Informe o nome da série: ");
+      scanf("%s", nomeSerie, sizeof(nomeSerie));
+      getchar();
+      inserirSerieAssistido(a, nomeSerie);
+
+    } else if (escolha_usuario == 3) {
+      removerSerieDesejo(d);
+
+    } else if (escolha_usuario == 4) {
+      creditos();
+    } else if (escolha_usuario == 5) {
+      printf("Informe o nome da série: ");
+      scanf("%s", nomeSerie, sizeof(nomeSerie));
+      getchar();
+      Copiar(d, a, nomeSerie);
+
+    } else if (escolha_usuario == 0) {
+      break;
+    }
+  }
+}
