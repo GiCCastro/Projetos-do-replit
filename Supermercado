@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct No {
+  int pessoa;
+  struct No *prox;
+} No;
+
+typedef struct {
+  No *inicial;
+} Lista;
+
+Lista *criacao() {
+  Lista *l = (Lista *)calloc(1, sizeof(Lista));
+  l->inicial = NULL;
+  return l;
+}
+
+void inserirFim(Lista *l, int id) {
+  No *novono = (No *)calloc(1, sizeof(No));
+  novono->pessoa = id;
+  novono->prox = NULL;
+  if (l->inicial == NULL) {
+    l->inicial = novono;
+  } else {
+    No *temp = l->inicial;
+    while (temp->prox != NULL) {
+      temp = temp->prox;
+    }
+    temp->prox = novono;
+  }
+}
+
+void apresentar(Lista *l) {
+  No *aux = l->inicial;
+  while (aux != NULL) {
+    printf("%d -> ", aux->pessoa);
+    aux = aux->prox;
+  }
+}
+
+int removerPrimeiroNo(Lista *l) {
+  No *inicial = l->inicial;
+  if (inicial == NULL) {
+    printf("Lista vazia");
+    return 0;
+  } else {
+    l->inicial = inicial->prox;
+    free(inicial);
+    return 1;
+  }
+}
+
+int removerUltimoNo(Lista *l) {
+  if (l->inicial == NULL) {
+    return 0;
+  } else {
+    No *temp;
+    temp = l->inicial;
+    if (temp->prox == NULL) {
+      l->inicial = NULL;
+      free(temp);
+      return 1;
+    } else {
+      while (temp->prox->prox != NULL) {
+        temp = temp->prox;
+      }
+      free(temp->prox);
+      temp->prox = NULL;
+      return 1;
+    }
+  }
+}
+
+int main() {
+  Lista *l;
+
+  l = criacao();
+  int c = 1;
+  int escolha;
+  int id;
+  for (int i = 1; i <= 4; i++) {
+
+    printf("Informe o seu id para entrar na fila do supermercado: ");
+    scanf("%d", &id);
+    inserirFim(l, id);
+  }
+  apresentar(l);
+
+  while (c != 0) {
+    printf("\nVoce deseja que a remoção seja feita em FIFO(1) ou LIFO(2)?");
+    scanf("%d", &escolha);
+
+    if (escolha == 1) {
+      removerPrimeiroNo(l);
+      apresentar(l);
+    }
+    if (escolha == 2) {
+      removerUltimoNo(l);
+      apresentar(l);
+    }
+
+    printf("\nDigite 1 se deseja continuar ou 0 caso queira fechar o "
+           "supermercado");
+    scanf("%d", &c);
+  }
+}
