@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  char nome[100];
+  int qtd_pagina;
+} Documento;
+
+typedef struct {
+  int primeiro, ultimo, capacidade, tamanho;
+  Documento *doc;
+} Fila;
+
+Fila *criarFila(int capacidade) {
+  Fila *f = (Fila *)calloc(1, sizeof(Fila));
+  f->capacidade = capacidade;
+  f->primeiro = 0;
+  f->ultimo = capacidade - 1; // 5 - 1 = 4
+  f->tamanho = 0;
+  f->doc = (Documento *)calloc(capacidade, sizeof(Documento));
+  return f;
+}
+
+void enfileirar(Fila *f, const char *nome, int pagina) {
+  f->ultimo = (f->ultimo + 1) % (f->capacidade); // 4 + 1 = 5, 5 % 5 = 0
+  strcpy((f->doc + f->ultimo)->nome, nome);
+  (f->doc + f->ultimo)->qtd_pagina = pagina;
+  f->tamanho++;
+}
+
+Documento desenfileirar(Fila *f) {
+  Documento valor_removido = *(f->doc + f->primeiro);
+  f->primeiro = (f->primeiro + 1) % f->capacidade;
+  f->tamanho--;
+  return valor_removido;
+}
+
+void apresentar(Fila *f) {
+  int primeiro = f->primeiro; // 0
+  for (int i = 0; i < f->tamanho; i++) {
+    printf("\nNome: %s\nPáginas: %d\n", f->doc[primeiro].nome,
+           f->doc[primeiro].qtd_pagina);
+    primeiro = (primeiro + 1) % f->capacidade;
+  }
+}
+
+int estaCheia(Fila *f) { return (f->tamanho == f->capacidade); }
+
+int estaVazia(Fila *f) { return (f->tamanho == 0); }
+
+void menu(Fila *f) {
+  int opcao;
+  char nome[100];
+  int pagina;
+
+  while (opcao != 0) {
+
+    printf("\nO que você deseja realizar?\n0 - Encerrar a impressora\n1 - "
+           "Adicionar documento\n2 - Imprimir "
+           "documento\n3 - Ver fila de impressão\n");
+    scanf("%d", &opcao);
+
+    switch (opcao) {
+    case (0):
+      printf("\nEncerrando sistema de impressão...");
+      break;
+
+    case (1):
+      if (estaCheia(f)) {
+        printf("\nImpressora cheia\n");
+      } else {
+        printf("\nDocumento:");
+        scanf("%s", nome);
+        printf("Quantidade de páginas:");
+        scanf("%d", &pagina);
+        enfileirar(f, nome, pagina);
+      }
+      break;
+
+    case (2):
+      if (estaVazia(f)) {
+        printf("\nImpressora vazia\n");
+      } else {
+        printf("\nImprimindo...\n");
+        desenfileirar(f);
+      }
+      break;
+
+    case (3):
+      if (estaVazia(f)) {
+        printf("\nImpressora vazia\n");
+      } else {
+        apresentar(f);
+      }
+      break;
+    }
+  }
+}
+
+int main() {
+  int tam;
+  printf("\nBem-vindo(a) ao sistema de impressão do LIA\n\n");
+  printf("Quantos documentos você deseja imprimir?");
+  scanf("%d", &tam);
+  Fila *f = criarFila(tam);
+  menu(f);
+}
