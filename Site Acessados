@@ -1,0 +1,112 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  char url[100];
+  char nome[50];
+} Site;
+
+typedef struct {
+  int tamanho, topo, controle;
+  Site *site;
+} Pilha;
+ 
+Pilha *criarPilha(int tam) { 
+  Pilha *p = (Pilha *)calloc(1, sizeof(Pilha));
+  p->topo = -1;
+  p->site = (Site *)calloc(tam, sizeof(Site));
+  p->tamanho = tam;
+  p->controle = p->tamanho;
+  return p;
+}
+
+void inserir(Pilha *p, char *nome, char *url) {
+    p->topo++;
+    strcpy((p->site + p->topo)->nome, nome); 
+    strcpy((p->site + p->topo)->url, url);
+}
+
+Site voltar(Pilha *p) {
+  Site valorRemovido = *(p->site + p->topo);
+  p->topo--;
+  p->controle--;
+  return valorRemovido;
+}
+
+void apresentar(Pilha *p) {
+  printf("\nHistórico:\n");
+  for (int i = p->topo; i >= 0; i--) {
+    printf("\nNome: %s\nURL: %s\n", p->site[i].nome, p->site[i].url);
+  }
+}
+
+void menu(Pilha *p) {
+  char nome[100];
+  char url[50];
+  int escolha;
+  while (escolha != 0) {
+
+    printf("\nO que você deseja realizar?\n0 - Encerrar\n1 - Acessar site\n2 - "
+           "Voltar ao anterior\n3 - Histórico\n\n");
+    scanf("%d", &escolha);
+
+    switch (escolha) {
+
+    case 0:
+      printf("\nEncerrando...\n");
+      break;
+
+    case 1:
+      if (p->topo == p->tamanho) {
+        printf("\nERRO - Pilha Cheia, escolha outra opção:\n");
+      }
+     else {
+        printf("\n1 - Acessar site\n");
+        printf("\nSite: ");
+        scanf("%s", nome);
+        getchar();
+        printf("Url:");
+        scanf("%s", url);
+        inserir(p, nome, url);
+      }
+      break;
+
+    case 2:
+      if (p->topo == -1) {
+        printf("\nERRO - Pilha Vazia, escolha outra opção:\n");
+      } 
+
+      else {
+        printf("\n2 - Voltar ao Anterior\n");
+        voltar(p);
+        apresentar(p);
+      }
+      break;
+    case 3:
+      if (p->topo == -1) {
+        printf("\nERRO - Pilha Vazia, escolha outra opção\n");
+      }else{  
+      printf("\n3 - Histórico\n");
+      apresentar(p);
+      }
+      break;
+
+    default:
+      printf("\nOpção Inválida\n");
+      break;
+    }
+  }
+}
+
+int main() {
+  int tam;
+  printf("Quantidade de sites:");
+  scanf("%d", &tam);
+  Pilha *p = criarPilha(tam - 1); 
+  menu(p);
+}
+
+
+
